@@ -5,7 +5,7 @@ const xpt = (expect, toNot = false) => (value, target) => {
 }
 
 function expectCorrectSpanData (expect) {
-  return ({ span, command, multi, args, parentId, toNot = false }) => {
+  return ({ span, command, parentId, toNot = false }) => {
     // Check the end-points
     expect(span.localEndpoint.serviceName).to.equal('unknown');
     expect(span.remoteEndpoint.serviceName).to.equal('mongodb');
@@ -19,15 +19,7 @@ function expectCorrectSpanData (expect) {
     // For certain tests docker on docker will be used where the host is not an ipv4
     if (require('net').isIPv4(process.env.MONGO_HOST || '127.0.0.1')) expect(span.remoteEndpoint.ipv4).to.equal(process.env.MONGO_HOST || '127.0.0.1');
 
-    // If multi is passed check the commands
-    if (multi && Array.isArray(multi)) {
-      expect(span.tags.commands).to.be.eq(JSON.stringify(multi))
-    }
-
-    // If args are to be checked
-    if (args && Array.isArray(args)) {
-      expect(span.tags.args).to.be.eq(JSON.stringify(args))
-    }
+    //
   }
 }
 
