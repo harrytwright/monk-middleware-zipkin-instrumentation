@@ -20,7 +20,9 @@ const multiDataWithKeys = (obj, keys) => Object.keys(obj).some((key) => keys.inc
 // Clean up the names since rpc are lowercased
 const camelToSnakeCase = str => str.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
 
-// TODO: Go through each method and add the custom binary
+/**
+ * This is a way of adding extra tags to the request
+ * */
 const binary = {
   // Seems like a good idea maybe??
   aggregate: (args) => flatMapDataWithKey(args, 'stages'),
@@ -40,7 +42,7 @@ const binary = {
 // These are the standard output for the zipkin client
 //
 // with verbose added which is a thing I like to add
-module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb', serviceName = tracer.localEndpoint.serviceName, verbose = true }) {
+module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb', serviceName = tracer.localEndpoint.serviceName, verbose = true, binary = binary }) {
   function commonAnnotations (method, ctx) {
     // This seems expensive for what it is ??
     const { hostname, port } = new URL(ctx.monkInstance._connectionURI)
