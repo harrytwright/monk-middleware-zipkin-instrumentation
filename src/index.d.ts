@@ -16,12 +16,12 @@ interface BinaryOptions {
 	remove?: (args: Object) => Map<string, string>;
 }
 
-declare function createZipkin({ tracer, remoteServiceName, serviceName, verbose, binary }: {
+declare function createZipkin({ tracer, remoteServiceName, serviceName, verbose, binaryOpts }: {
 	tracer: Tracer;
 	remoteServiceName?: string;
 	serviceName?: string;
 	verbose?: Boolean;
-	binary?: BinaryOptions;
+	binaryOpts?: BinaryOptions;
 }): TMiddleware;
 
 export default createZipkin;

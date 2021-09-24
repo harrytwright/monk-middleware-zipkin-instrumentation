@@ -42,7 +42,7 @@ const binary = {
 // These are the standard output for the zipkin client
 //
 // with verbose added which is a thing I like to add
-module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb', serviceName = tracer.localEndpoint.serviceName, verbose = true, binary = binary }) {
+module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb', serviceName = tracer.localEndpoint.serviceName, verbose = true, binaryOpts = binary }) {
   function commonAnnotations (method, ctx) {
     // This seems expensive for what it is ??
     const { hostname, port } = new URL(ctx.monkInstance._connectionURI)
@@ -60,7 +60,7 @@ module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb',
   // Just to make sure this is safe
   function record (method, obj) {
     /** @type {Map<string, string>} */
-    const argsMap = binary[method](obj)
+    const argsMap = binaryOpts[method](obj)
     argsMap && argsMap.size > 0 && argsMap.forEach((value, key) => {
       tracer.recordBinary(key, value)
     })
@@ -75,7 +75,7 @@ module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb',
         tracer.letId(id, () => {
           commonAnnotations(method, ctx)
           // Maybe??
-          verbose && binary[method] && record(method, args)
+          verbose && binaryOpts[method] && record(method, args)
         })
 
         // This is why monk is the best
