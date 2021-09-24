@@ -27,7 +27,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16, 14, 12]
+        node-version: [16] #, 14, 12]
         test-suite: [test, coverage] #[test, 'test:ts', coverage] # Add multiple tests but since they use the same build just do it here
 
     # Service containers to run with `container-job`
