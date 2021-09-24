@@ -53,6 +53,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Peer Dependencies
+        if: ${{ matrix.node-version != 16 }}
+        run: npm i --save-dev monk zipkin
+
       - name: Run ${{ matrix.test-suite }}
         run: npm run ${{ matrix.test-suite }}
         env:
