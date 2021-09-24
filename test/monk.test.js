@@ -9,7 +9,7 @@ const { expectCorrectSpanData, createTracer } = require('./utils/tracer')
 
 const expect = chai.expect
 
-const host = `${process.env.MONGO_HOST = 'localhost:27017'}/${nanoid()}`
+const host = `${process.env.MONGO_HOST || 'localhost:27017'}/${nanoid()}`
 
 /**
  * Test this works on all working functions in monk w/ a binary method
