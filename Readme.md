@@ -20,7 +20,7 @@ db.addMiddleware(require('monk-middleware-zipkin-instrumentation')({ tracer }))
 
 ## TODO:
 
-- [ ] Add all binary logs
+- [X] Add all binary logs (ones that are still in use)
 - [ ] Add the option for custom binary logs
 - [ ] Test against zipkin clients
 - [ ] Benchmark
