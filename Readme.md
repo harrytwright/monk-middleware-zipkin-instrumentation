@@ -30,16 +30,12 @@ Please note that using express the context should be `zipkin-context-cls` or the
 
 ## Benchmark
 
-> Due to the proxying nature of the way zipkin works there is a slight discrepancy with performance.
->
-> In this case zipkin was faster but not by much
-
 Function calling time:
 
 ```shell
 $ node ./test/benchmark.js
-monk             10,457 ops/sec
-zipkin/monk      11,532 ops/sec
+monk                 293 ops/sec
+zipkin/monk          281 ops/sec
 ```
 
 Test configuration:
