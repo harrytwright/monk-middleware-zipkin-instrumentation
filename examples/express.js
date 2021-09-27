@@ -7,7 +7,7 @@
   const { HttpLogger } = require('zipkin-transport-http');
   const Context  = require('zipkin-context-cls')
 
-  const { Tracer, BatchRecorder, jsonEncoder: { JSON_V2 } } = require('zipkin')
+  const { Tracer, BatchRecorder, jsonEncoder: { JSON_V2 }, ExplicitContext } = require('zipkin')
 
   const recorder = new BatchRecorder({
     logger: new HttpLogger({
@@ -17,7 +17,7 @@
   })
 
   const tracer = new Tracer({
-    ctxImpl: new Context('zipkin', true), // cls context
+    ctxImpl: new ExplicitContext('zipkin', true), // cls context
     recorder: recorder, // batched http recorder
     localServiceName: 'example' // name of this application
   });

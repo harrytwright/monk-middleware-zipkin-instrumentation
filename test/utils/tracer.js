@@ -17,7 +17,7 @@ function expectCorrectSpanData (expect) {
     parentId && xpt(expect, toNot)(span.parentId, parentId)
 
     // For certain tests docker on docker will be used where the host is not an ipv4
-    if (require('net').isIPv4(process.env.MONGO_HOST || '127.0.0.1')) expect(span.remoteEndpoint.ipv4).to.equal(process.env.MONGO_HOST || '127.0.0.1')
+    if (require('net').isIPv4(process.env.MONGO_HOST || 'localhost:27017')) expect(span.remoteEndpoint.ipv4).to.equal(process.env.MONGO_HOST || 'localhost:27017')
 
     // Test the tags and see if they match the ones we want to watch
     Object.keys(tags).forEach((tag) => {
