@@ -48,6 +48,7 @@ module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb',
     const { hostname, port } = new URL(ctx.monkInstance._connectionURI)
 
     tracer.recordRpc(camelToSnakeCase(method))
+    verbose && tracer.recordBinary('collection', ctx.collection.name)
     tracer.recordAnnotation(new Annotation.ServiceName(serviceName))
     tracer.recordAnnotation(new Annotation.ServerAddr({
       serviceName: remoteServiceName,
@@ -68,36 +69,29 @@ module.exports = function createZipkin ({ tracer, remoteServiceName = 'mongodb',
 
   return function zipkinMiddleware (ctx) {
     return (next) => {
-      const originalId = tracer.id
-
       return (args, method) => {
-        const id = tracer.createChildId()
-        tracer.letId(id, () => {
+        return tracer.scoped(() => {
+          tracer.setId(tracer.createChildId())
+
+          const traceId = tracer.id;
           commonAnnotations(method, ctx)
-          // Maybe??
           verbose && binaryOpts[method] && record(method, args)
-        })
 
-        // This is why monk is the best
-        return next(args, method).then((res) => {
-          tracer.letId(id, () => {
-            tracer.recordAnnotation(new Annotation.ClientRecv())
+          return next(args, method).then((res) => {
+            tracer.scoped(() => {
+              tracer.setId(traceId)
+              tracer.recordAnnotation(new Annotation.ClientRecv())
+            })
+            return res
+          }, (err) => {
+            tracer.scoped(() => {
+              tracer.setId(traceId)
+              tracer.recordBinary('error', err.message || /* istanbul ignore next */ String(err))
+              tracer.recordAnnotation(new Annotation.ClientRecv())
+            })
+
+            throw err
           })
-
-          // This is in all of zipkin's instrumentation
-          // callback runs after the client request, so let's restore the former ID
-          // TODO: add tests for this for all clients
-          return tracer.letId(originalId, () => res)
-        }).catch((err) => {
-          tracer.letId(id, () => {
-            tracer.recordBinary('error', err.message || /* istanbul ignore next */ String(err))
-            tracer.recordAnnotation(new Annotation.ClientRecv())
-          })
-
-          // This is in all of zipkin's instrumentation
-          // callback runs after the client request, so let's restore the former ID
-          // TODO: add tests for this for all clients
-          throw tracer.letId(originalId, () => err)
         })
       }
     }
